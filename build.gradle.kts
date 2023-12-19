@@ -1,7 +1,7 @@
-
 plugins {
     kotlin("multiplatform") version "1.9.21"
     kotlin("plugin.serialization") version "1.9.21"
+    id("maven-publish")
 }
 
 group = "work.socialhub"
@@ -57,4 +57,17 @@ tasks.wrapper {
 
 tasks.named<Test>("jvmTest") {
     useJUnitPlatform()
+}
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/uakihir0/khttpclient")
+            credentials {
+                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+            }
+        }
+    }
 }
