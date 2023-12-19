@@ -18,7 +18,16 @@ However, the behavior in that case cannot be guaranteed.
 
 ## Usage
 
-For detailed usage, refer to the test code.
+```kotlin:build.gradle.kts
+repositories {
+    mavenCentral()
++   maven { url = uri("https://repo.repsy.io/mvn/uakihir0/public") }
+}
+
+dependencies {
++   implementation("work.socialhub:khttpclient:0.0.1-SNAPSHOT")
+}
+```
 
 ### GET
 
@@ -55,6 +64,8 @@ val response = HttpRequest()
     .json("""{"key": "value"}""")
     .post()
 ```
+
+For detailed usage, refer to the test code.
 
 ## License
 

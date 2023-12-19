@@ -15,7 +15,16 @@ Ktor Client では、各プラットフォーム向けに幾つかの HttpClient
 
 ## 使い方
 
-細かい使用方法についてはテストコードを参照して下さい。
+```kotlin:build.gradle.kts
+repositories {
+    mavenCentral()
++   maven { url = uri("https://repo.repsy.io/mvn/uakihir0/public") }
+}
+
+dependencies {
++   implementation("work.socialhub:khttpclient:0.0.1-SNAPSHOT")
+}
+```
 
 ### GET
 
@@ -52,6 +61,8 @@ val response = HttpRequest()
     .json("""{"key": "value"}""")
     .post()
 ```
+
+細かい使用方法についてはテストコードを参照して下さい。
 
 ## ライセンス
 
