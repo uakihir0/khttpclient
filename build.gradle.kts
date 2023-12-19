@@ -26,19 +26,27 @@ kotlin {
         val kotlinxVersion = "1.6.2"
         val kotestVersion = "5.8.0"
 
-        commonMain.dependencies {
-            implementation("io.ktor:ktor-client-core:$ktorVersion")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxVersion")
+        val commonMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-core:$ktorVersion")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxVersion")
+            }
         }
 
         // for Apple platform
-        appleMain.dependencies {
-            implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+        appleMain {
+            dependsOn(commonMain)
+            dependencies {
+                implementation("io.ktor:ktor-client-darwin:$ktorVersion")
+            }
         }
 
         // for JVM
-        jvmMain.dependencies {
-            implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+        jvmMain {
+            dependsOn(commonMain)
+            dependencies {
+                implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+            }
         }
 
         // for test (kotlin/jvm)
