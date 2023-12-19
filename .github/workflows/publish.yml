@@ -27,5 +27,5 @@ jobs:
       with:
         arguments: publish
       env:
-        USERNAME: ${{ github.actor }}
-        TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        USERNAME: ${{ secrets.REPSY_USERNAME }}
+        PASSWORD: ${{ secrets.REPSY_PASSWORD }}

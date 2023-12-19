@@ -62,11 +62,10 @@ tasks.named<Test>("jvmTest") {
 publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/uakihir0/khttpclient")
+            url = uri("https://repo.repsy.io/mvn/uakihir0/khttpclient")
             credentials {
-                username = project.findProperty("gpr.user") as String? ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") as String? ?: System.getenv("TOKEN")
+                username = System.getenv("USERNAME")
+                password = System.getenv("PASSWORD")
             }
         }
     }
