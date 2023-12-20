@@ -21,6 +21,11 @@ class HttpResponse(
                 body = response.body<ByteArray>(),
             )
         }
+
+        // mapper settings
+        val mapper = Json {
+            ignoreUnknownKeys = true
+        }
     }
 
     fun stringBody(): String {
@@ -28,6 +33,6 @@ class HttpResponse(
     }
 
     inline fun <reified T> typedBody(): T {
-        return Json.decodeFromString<T>(body.decodeToString())
+        return mapper.decodeFromString<T>(body.decodeToString())
     }
 }
