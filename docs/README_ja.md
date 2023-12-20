@@ -1,5 +1,7 @@
 # kHttpClient
 
+![Maven metadata URL](https://img.shields.io/maven-metadata/v?metadataUrl=https%3A%2F%2Frepo.repsy.io%2Fmvn%2Fuakihir0%2Fpublic%2Fwork%2Fsocialhub%2Fkhttpclient%2Fmaven-metadata.xml&label=repsy%20(maven))
+
 **このライブラリは [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) でシンプルに Http リクエストを行うためのライブラリです。**
 Ktor Client を依存関係に持っており、それをラップする形で実装されています。そのため、本ライブラリは、
 Kotlin Multiplatform かつ Ktor Client がサポートしているプラットフォームであれば利用可能です。
