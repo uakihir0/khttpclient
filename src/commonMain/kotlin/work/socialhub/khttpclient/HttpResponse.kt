@@ -32,7 +32,9 @@ class HttpResponse(
         return body.decodeToString()
     }
 
-    inline fun <reified T> typedBody(): T {
-        return mapper.decodeFromString<T>(body.decodeToString())
+    inline fun <reified T> typedBody(
+        json: Json = mapper
+    ): T {
+        return json.decodeFromString<T>(body.decodeToString())
     }
 }
