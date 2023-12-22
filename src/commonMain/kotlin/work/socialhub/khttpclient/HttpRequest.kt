@@ -12,7 +12,7 @@ class HttpRequest {
     var host: String? = null
     var path: String? = null
     var port: Int? = null
-    var mediaType: String? = null
+    var accept: String? = null
     var userAgent: String? = "kHttpClient/1.0"
 
     val params = mutableListOf<HttpParameter>()
@@ -24,8 +24,8 @@ class HttpRequest {
     fun port(port: Int?) = also { it.port = port }
 
     // Headers
+    fun accept(accept: String) = also { it.accept = accept }
     fun userAgent(userAgent: String) = also { it.userAgent = userAgent }
-    fun mediaType(mediaType: String) = also { it.mediaType = mediaType }
     fun header(key: String, value: String) = also { it.header[key] = value }
 
     // Parameters
@@ -33,8 +33,16 @@ class HttpRequest {
         params.add(HttpParameter.query(key, value.toString()))
     }
 
+    fun queries(queries: Map<String, Any>) = also {
+        queries.forEach { (k, v) -> query(k, v) }
+    }
+
     fun param(key: String, value: Any) = also {
         params.add(HttpParameter.param(key, value.toString()))
+    }
+
+    fun params(params: Map<String, Any>) = also {
+        params.forEach { (k, v) -> param(k, v) }
     }
 
     fun file(key: String, fileName: String, fileBody: ByteArray) = also {
@@ -61,7 +69,7 @@ class HttpRequest {
         val req = this
         val client = HttpClient()
 
-        mediaType?.let { header["Accept"] = it }
+        accept?.let { header["Accept"] = it }
         userAgent?.let { header["User-Agent"] = it }
 
         return HttpResponse.from(
