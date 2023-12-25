@@ -39,8 +39,7 @@ dependencies {
 
 ```kotlin
  val response = HttpRequest()
-    .host("https://httpbin.org/")
-    .path("get")
+    .url("https://httpbin.org/get")
     .query("key1", "value1")
     .query("key2", "value2")
     .get()
@@ -52,8 +51,7 @@ From データとファイルを付与して POST リクエストを行う場合
 
 ```kotlin
 val response = HttpRequest()
-    .host("https://httpbin.org/")
-    .path("post")
+    .url("https://httpbin.org/post")
     .param("key", "value")
     .file("file", "test.txt", "content".toByteArray())
     .post()
@@ -63,8 +61,7 @@ JSON 文字列をボディーとして付与して POST リクエストを行う
 
 ```kotlin
 val response = HttpRequest()
-    .host("https://httpbin.org/")
-    .path("post")
+    .url("https://httpbin.org/post")
     .json("""{"key": "value"}""")
     .post()
 ```
