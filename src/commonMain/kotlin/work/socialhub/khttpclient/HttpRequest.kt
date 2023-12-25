@@ -9,9 +9,12 @@ import work.socialhub.khttpclient.HttpParameter.Type
 
 class HttpRequest {
 
+    var schema: String = "https"
     var host: String? = null
     var path: String? = null
     var port: Int? = null
+    var url: String? = null
+
     var accept: String? = null
     var userAgent: String? = "kHttpClient/1.0"
 
@@ -19,9 +22,11 @@ class HttpRequest {
     val header = mutableMapOf<String, String>()
 
     // Basic
+    fun schema(schema: String) = also { it.schema = schema }
     fun host(host: String) = also { it.host = host }
     fun path(path: String) = also { it.path = path }
     fun port(port: Int?) = also { it.port = port }
+    fun url(url: String) = also { it.url = url }
 
     // Headers
     fun accept(accept: String) = also { it.accept = accept }
@@ -54,7 +59,8 @@ class HttpRequest {
     }
 
     fun pathValue(key: String, value: String) = also {
-        it.path = it.path!!.replace("{$key}".toRegex(), value)
+        it.path = it.path?.replace("{$key}".toRegex(), value)
+        it.url = it.url?.replace("{$key}".toRegex(), value)
     }
 
     // Methods
@@ -75,9 +81,17 @@ class HttpRequest {
         return HttpResponse.from(
             client.request {
                 this.method = method
-                this.url.takeFrom(req.url()!!)
-                req.port?.let { this.url.port = it }
-
+                if (req.url != null) {
+                    val tmp = checkNotNull(req.url)
+                    this.url.takeFrom(URLBuilder(tmp))
+                } else {
+                    this.url(
+                        req.schema,
+                        req.host,
+                        req.port,
+                        req.path,
+                    )
+                }
                 this.headers {
                     req.header.forEach { (k, v) ->
                         append(k, v)
@@ -160,13 +174,5 @@ class HttpRequest {
                 }
             }
         )
-    }
-
-    private fun url(): String? {
-        var url = host
-        if (path != null) {
-            url += path
-        }
-        return url
     }
 }

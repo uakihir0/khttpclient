@@ -7,10 +7,19 @@ import work.socialhub.khttpclient.httpbin.GetResponse
 class GetTest {
 
     @Test
+    fun testSimpleGetSimple() = runBlocking {
+        val response = HttpRequest()
+            .host("httpbin.org")
+            .path("get")
+            .get()
+
+        println(response.stringBody())
+    }
+
+    @Test
     fun testSimpleGet() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("get")
+            .url("https://httpbin.org/get")
             .get()
 
         println(response.stringBody())
@@ -19,8 +28,7 @@ class GetTest {
     @Test
     fun testGetWithQuest() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("get")
+            .url("https://httpbin.org/get")
             .query("key1", "value1")
             .query("key2", "value2")
             .get()
@@ -35,8 +43,7 @@ class GetTest {
     @Test
     fun testGetWithHeader() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("get")
+            .url("https://httpbin.org/get")
             .header("Header1", "value1")
             .header("Header2", "value2")
             .get()
