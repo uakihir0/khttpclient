@@ -11,8 +11,7 @@ class PostTest {
     @Test
     fun testSimplePost() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .post()
 
         println(response.stringBody())
@@ -21,8 +20,7 @@ class PostTest {
     @Test
     fun testPostWithQuery() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .query("key1", "value1")
             .query("key2", "value2")
             .post()
@@ -37,8 +35,7 @@ class PostTest {
     @Test
     fun testPostWithHeader() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .header("Header1", "value1")
             .header("Header2", "value2")
             .post()
@@ -53,8 +50,7 @@ class PostTest {
     @Test
     fun testPostWithParams() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .param("key1", "value1")
             .param("key2", "value2")
             .post()
@@ -68,11 +64,13 @@ class PostTest {
 
     @Test
     fun testPostWithJson() = runBlocking {
-        val json = mapOf("key1" to "value1", "key2" to "value2")
+        val json = mapOf(
+            "key1" to "value1",
+            "key2" to "value2"
+        )
 
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .json(Json.encodeToString(json))
             .post()
 
@@ -86,8 +84,7 @@ class PostTest {
     @Test
     fun testPostWithFile() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .file("file", "test.txt", "content".toByteArray())
             .post()
 
@@ -100,8 +97,7 @@ class PostTest {
     @Test
     fun testPostWithFileAndParams() = runBlocking {
         val response = HttpRequest()
-            .host("https://httpbin.org/")
-            .path("post")
+            .url("https://httpbin.org/post")
             .param("key", "value")
             .file("file", "test.txt", "content".toByteArray())
             .post()

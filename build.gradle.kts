@@ -28,6 +28,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
+            implementation("io.ktor:ktor-client-websockets:$ktorVersion")
             implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxVersion")
         }
 
