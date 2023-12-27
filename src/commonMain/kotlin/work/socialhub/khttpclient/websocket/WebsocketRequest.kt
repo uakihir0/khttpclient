@@ -6,6 +6,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 class WebsocketRequest {
@@ -20,8 +21,8 @@ class WebsocketRequest {
     var userAgent: String? = "kHttpClient/1.0"
     val header = mutableMapOf<String, String>()
 
-    var textListener: (String) -> Unit = {}
-    var bytesListener: (ByteArray) -> Unit = {}
+    var textListener: suspend (String) -> Unit = {}
+    var bytesListener: suspend (ByteArray) -> Unit = {}
 
     var onOpenListener: (WebsocketRequest) -> Unit = {}
     var onCloseListener: (WebsocketRequest) -> Unit = {}
@@ -34,8 +35,8 @@ class WebsocketRequest {
     fun url(url: String?) = also { it.url = url }
 
     // Listener
-    fun textListener(listener: (String) -> Unit) = also { it.textListener = listener }
-    fun bytesListener(listener: (ByteArray) -> Unit) = also { it.bytesListener = listener }
+    fun textListener(listener: suspend (String) -> Unit) = also { it.textListener = listener }
+    fun bytesListener(listener: suspend (ByteArray) -> Unit) = also { it.bytesListener = listener }
     fun onOpenListener(listener: (WebsocketRequest) -> Unit) = also { it.onOpenListener = listener }
     fun onCloseListener(listener: (WebsocketRequest) -> Unit) = also { it.onCloseListener = listener }
 
@@ -53,8 +54,8 @@ class WebsocketRequest {
     private var session: DefaultClientWebSocketSession? = null
 
     // Start
-    suspend fun startGet() = start(HttpMethod.Get)
-    suspend fun startPost() = start(HttpMethod.Post)
+    suspend fun open() = start(HttpMethod.Get)
+    suspend fun openPost() = start(HttpMethod.Post)
 
     suspend fun start(method: HttpMethod) = also {
         val req = this
@@ -86,11 +87,11 @@ class WebsocketRequest {
                 while (true) {
                     when (val receive = incoming.receive()) {
                         is Frame.Text -> {
-                            textListener(receive.readText())
+                            launch { textListener(receive.readText()) }
                         }
 
                         is Frame.Binary -> {
-                            bytesListener(receive.readBytes())
+                            launch { bytesListener(receive.readBytes()) }
                         }
 
                         else -> {}
