@@ -4,6 +4,7 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
+import io.ktor.http.ContentType.*
 import io.ktor.http.content.*
 import work.socialhub.khttpclient.HttpParameter.Type
 
@@ -99,13 +100,13 @@ class HttpRequest {
                 }
 
                 if ((req.params.size == 1) &&
-                    (req.params.first().type == Type.JSON)
+                    (canSendOnly(req.params.first()))
                 ) {
-                    // json
+                    val param = req.params.first()
                     setBody(
                         ByteArrayContent(
-                            bytes = req.params.first().fileBody!!,
-                            contentType = ContentType.Application.Json
+                            bytes = param.fileBody!!,
+                            contentType = param.fileContentType()
                         )
                     )
 
@@ -119,9 +120,8 @@ class HttpRequest {
                                         url.parameters.append(p.key, p.value!!)
                                     }
 
-                                    else -> {
-                                        // TODO: error
-                                    }
+                                    // TODO: error
+                                    else -> {}
                                 }
                             }
                         }
@@ -174,5 +174,17 @@ class HttpRequest {
                 }
             }
         )
+    }
+
+    private fun canSendOnly(param: HttpParameter): Boolean {
+        if (param.type == Type.JSON) return true
+
+        return when (param.fileContentType()) {
+            Application.Json -> true
+            Image.JPEG -> true
+            Image.PNG -> true
+            Image.GIF -> true
+            else -> false
+        }
     }
 }

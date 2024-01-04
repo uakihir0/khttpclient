@@ -95,6 +95,18 @@ class PostTest {
     }
 
     @Test
+    fun testPostWithImage() = runBlocking {
+        val stream = javaClass.getResourceAsStream("/image/icon.png")
+
+        val response = HttpRequest()
+            .url("https://httpbin.org/post")
+            .file("file", "icon.png", stream.readBytes())
+            .post()
+
+        println(response.stringBody)
+    }
+
+    @Test
     fun testPostWithFileAndParams() = runBlocking {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
