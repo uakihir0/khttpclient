@@ -14,7 +14,7 @@ class PostTest {
             .url("https://httpbin.org/post")
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
     }
 
     @Test
@@ -25,7 +25,7 @@ class PostTest {
             .query("key2", "value2")
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
         assert(bin.args["key1"] == "value1")
@@ -40,7 +40,7 @@ class PostTest {
             .header("Header2", "value2")
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
         assert(bin.headers["Header1"] == "value1")
@@ -55,7 +55,7 @@ class PostTest {
             .param("key2", "value2")
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
         assert(bin.form["key1"] == "value1")
@@ -74,7 +74,7 @@ class PostTest {
             .json(Json.encodeToString(json))
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
         assert(bin.json?.get("key1") == "value1")
@@ -88,7 +88,7 @@ class PostTest {
             .file("file", "test.txt", "content".toByteArray())
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
         assert(bin.files["file"] == "content")
@@ -102,7 +102,7 @@ class PostTest {
             .file("file", "test.txt", "content".toByteArray())
             .post()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
         assert(bin.form["key"] == "value")

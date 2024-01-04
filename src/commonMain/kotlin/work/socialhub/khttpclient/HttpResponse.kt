@@ -10,6 +10,7 @@ class HttpResponse(
     val headers: Map<String, List<String>>,
     val body: ByteArray,
 ) {
+
     companion object {
 
         suspend fun from(
@@ -28,13 +29,13 @@ class HttpResponse(
         }
     }
 
-    fun stringBody(): String {
-        return body.decodeToString()
+    val stringBody by lazy {
+        body.decodeToString()
     }
 
     inline fun <reified T> typedBody(
         json: Json = mapper
     ): T {
-        return json.decodeFromString<T>(body.decodeToString())
+        return json.decodeFromString<T>(stringBody)
     }
 }

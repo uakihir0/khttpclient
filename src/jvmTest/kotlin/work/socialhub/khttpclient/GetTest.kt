@@ -13,7 +13,7 @@ class GetTest {
             .path("get")
             .get()
 
-        println(response.stringBody())
+        println(response.stringBody)
     }
 
     @Test
@@ -22,7 +22,7 @@ class GetTest {
             .url("https://httpbin.org/get")
             .get()
 
-        println(response.stringBody())
+        println(response.stringBody)
     }
 
     @Test
@@ -33,7 +33,7 @@ class GetTest {
             .query("key2", "value2")
             .get()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<GetResponse>()
         assert(bin.args["key1"] == "value1")
@@ -48,7 +48,7 @@ class GetTest {
             .header("Header2", "value2")
             .get()
 
-        println(response.stringBody())
+        println(response.stringBody)
 
         val bin = response.typedBody<GetResponse>()
         assert(bin.headers["Header1"] == "value1")
