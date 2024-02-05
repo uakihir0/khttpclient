@@ -22,7 +22,7 @@ kotlin {
     macosArm64()
 
     sourceSets {
-        val ktorVersion = "2.3.7"
+        val ktorVersion = "2.3.8"
         val kotlinxVersion = "1.6.2"
         val kotestVersion = "5.8.0"
 
