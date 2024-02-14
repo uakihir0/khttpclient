@@ -7,7 +7,6 @@ import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class WebsocketRequest {
 
@@ -110,7 +109,7 @@ class WebsocketRequest {
         session = null
     }
 
-    fun sendText(text: String) = runBlocking {
+    suspend fun sendText(text: String) {
         checkNotNull(session).let {
             if (it.isActive) {
                 it.send(text)
@@ -118,7 +117,7 @@ class WebsocketRequest {
         }
     }
 
-    fun sendBinary(content: ByteArray) = runBlocking {
+    suspend fun sendBinary(content: ByteArray) {
         checkNotNull(session).let {
             if (it.isActive) {
                 it.send(content)

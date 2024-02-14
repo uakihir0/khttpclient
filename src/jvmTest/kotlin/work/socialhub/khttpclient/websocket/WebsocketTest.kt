@@ -12,14 +12,16 @@ class WebsocketTest {
 
         val request = WebsocketRequest()
             .url("wss://echo.websocket.org")
-            .textListener { println(">>> text: $it") }
+            .textListener { println(">>> text: [$it]") }
             .onCloseListener { println(">>> close") }
             .onOpenListener { req ->
                 println(">>> open")
                 Thread {
                     repeat(10) {
-                        req.sendText(">>> send: $it")
-                        Thread.sleep(100)
+                        runBlocking {
+                            req.sendText(">>> send: $it")
+                            Thread.sleep(100)
+                        }
                     }
                 }.start()
             }
