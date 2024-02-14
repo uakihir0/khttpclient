@@ -13,8 +13,12 @@ repositories {
 
 kotlin {
     jvmToolchain(11)
-
     jvm { withJava() }
+    js(IR) {
+        binaries.library()
+        browser()
+    }
+
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -23,13 +27,12 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "2.3.8"
-        val kotlinxVersion = "1.6.2"
         val kotestVersion = "5.8.0"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-client-websockets:$ktorVersion")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$kotlinxVersion")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
         }
 
         // for Apple platform
@@ -40,6 +43,11 @@ kotlin {
         // for JVM
         jvmMain.dependencies {
             implementation("io.ktor:ktor-client-okhttp:$ktorVersion")
+        }
+
+        // for JS
+        jsMain.dependencies {
+            implementation("io.ktor:ktor-client-js:$ktorVersion")
         }
 
         // for test (kotlin/jvm)
