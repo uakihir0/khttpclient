@@ -26,7 +26,7 @@ kotlin {
     macosArm64()
 
     sourceSets {
-        val ktorVersion = "2.3.8"
+        val ktorVersion = "2.3.9"
         val kotestVersion = "5.8.0"
 
         commonMain.dependencies {
