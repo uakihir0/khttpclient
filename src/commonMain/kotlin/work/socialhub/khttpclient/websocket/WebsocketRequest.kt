@@ -80,17 +80,18 @@ class WebsocketRequest {
                 }
             }
         }) {
-            req.onOpenListener(req)
             try {
                 session = this
-                while (true) {
-                    when (val receive = incoming.receive()) {
+                req.onOpenListener(req)
+
+                for (frame in incoming) {
+                    when (frame) {
                         is Frame.Text -> {
-                            launch { textListener(receive.readText()) }
+                            launch { textListener(frame.readText()) }
                         }
 
                         is Frame.Binary -> {
-                            launch { bytesListener(receive.readBytes()) }
+                            launch { bytesListener(frame.readBytes()) }
                         }
 
                         else -> {}
