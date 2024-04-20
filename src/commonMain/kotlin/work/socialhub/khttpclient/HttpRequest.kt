@@ -21,6 +21,7 @@ class HttpRequest {
 
     val params = mutableListOf<HttpParameter>()
     val header = mutableMapOf<String, String>()
+    var multipart: Boolean = false
 
     // Basic
     fun schema(schema: String) = also { it.schema = schema }
@@ -33,6 +34,9 @@ class HttpRequest {
     fun accept(accept: String) = also { it.accept = accept }
     fun userAgent(userAgent: String) = also { it.userAgent = userAgent }
     fun header(key: String, value: String) = also { it.header[key] = value }
+
+    // Types
+    fun multipart(multipart: Boolean) = also { it.multipart = multipart }
 
     // Parameters
     fun query(key: String, value: Any) = also {
@@ -99,7 +103,8 @@ class HttpRequest {
                     }
                 }
 
-                if ((req.params.size == 1) &&
+                if (!multipart &&
+                    (req.params.size == 1) &&
                     (canSendOnly(req.params.first()))
                 ) {
                     val param = req.params.first()
