@@ -21,7 +21,9 @@ class HttpRequest {
 
     val params = mutableListOf<HttpParameter>()
     val header = mutableMapOf<String, String>()
-    var multipart: Boolean = false
+
+    var forceMultipart: Boolean = false
+    var followRedirect: Boolean = true
 
     // Basic
     fun schema(schema: String) = also { it.schema = schema }
@@ -35,8 +37,9 @@ class HttpRequest {
     fun userAgent(userAgent: String) = also { it.userAgent = userAgent }
     fun header(key: String, value: String) = also { it.header[key] = value }
 
-    // Types
-    fun multipart(multipart: Boolean) = also { it.multipart = multipart }
+    // Options
+    fun forceMultipart(forceMultipart: Boolean) = also { it.forceMultipart = forceMultipart }
+    fun followRedirect(followRedirect: Boolean) = also { it.followRedirect = followRedirect }
 
     // Parameters
     fun query(key: String, value: Any) = also {
@@ -78,7 +81,9 @@ class HttpRequest {
     // Request
     private suspend fun proceed(method: HttpMethod): HttpResponse {
         val req = this
-        val client = HttpClient()
+        val client = HttpClient {
+            this.followRedirects = req.followRedirect
+        }
 
         accept?.let { header["Accept"] = it }
         userAgent?.let { header["User-Agent"] = it }
@@ -103,7 +108,7 @@ class HttpRequest {
                     }
                 }
 
-                if (!multipart &&
+                if (!forceMultipart &&
                     (req.params.size == 1) &&
                     (canSendOnly(req.params.first()))
                 ) {
