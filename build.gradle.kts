@@ -26,13 +26,13 @@ kotlin {
     macosArm64()
 
     sourceSets {
-        val ktorVersion = "2.3.11"
-        val kotestVersion = "5.9.0"
+        val ktorVersion = "2.3.12"
+        val kotestVersion = "5.9.1"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-client-websockets:$ktorVersion")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.0")
         }
 
         // for Apple platform
