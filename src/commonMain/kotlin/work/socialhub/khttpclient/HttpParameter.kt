@@ -64,6 +64,8 @@ class HttpParameter(
             // video
             "mpeg" -> return ContentType.Video.MPEG
             "mp4" -> return ContentType.Video.MP4
+            "mov" -> return ContentType.Video.QuickTime
+            "webm" -> return ContentType("video", "webm")
 
             // application
             "json" -> return ContentType.Application.Json

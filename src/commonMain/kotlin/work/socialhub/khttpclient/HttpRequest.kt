@@ -194,6 +194,11 @@ class HttpRequest {
             Image.JPEG -> true
             Image.PNG -> true
             Image.GIF -> true
+            Video.MPEG -> true
+            Video.MP4 -> true
+            Video.QuickTime -> true
+            ContentType("video", "webm") -> true
+
             else -> false
         }
     }
