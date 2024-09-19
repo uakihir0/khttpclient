@@ -23,6 +23,7 @@ class HttpRequest {
     val header = mutableMapOf<String, String>()
 
     var forceMultipart: Boolean = false
+    var forceApplicationFormUrlEncoded: Boolean = false
     var followRedirect: Boolean = true
 
     // Basic
@@ -39,6 +40,9 @@ class HttpRequest {
 
     // Options
     fun forceMultipart(forceMultipart: Boolean) = also { it.forceMultipart = forceMultipart }
+    fun forceApplicationFormUrlEncoded(forceApplicationFormUrlEncoded: Boolean) = also {
+        it.forceApplicationFormUrlEncoded = forceApplicationFormUrlEncoded
+    }
     fun followRedirect(followRedirect: Boolean) = also { it.followRedirect = followRedirect }
 
     // Parameters
@@ -149,35 +153,51 @@ class HttpRequest {
                             }
 
                             if (params.isNotEmpty() || files.isNotEmpty()) {
-                                contentType(ContentType.MultiPart.FormData)
-                                setBody(
-                                    MultiPartFormDataContent(
-                                        formData {
 
-                                            // params
-                                            params.forEach { p ->
-                                                append(p.key, p.value!!)
-                                            }
+                                if (!forceApplicationFormUrlEncoded) {
+                                    contentType(ContentType.MultiPart.FormData)
+                                    setBody(
+                                        MultiPartFormDataContent(
+                                            formData {
 
-                                            // files
-                                            files.forEach { p ->
-                                                append(
-                                                    p.key,
-                                                    p.fileBody!!,
-                                                    Headers.build {
-                                                        append(
-                                                            HttpHeaders.ContentType,
-                                                            p.fileContentType()
-                                                        )
-                                                        append(
-                                                            HttpHeaders.ContentDisposition,
-                                                            "filename=${p.fileName}"
-                                                        )
-                                                    })
+                                                // params
+                                                params.forEach { p ->
+                                                    append(p.key, p.value!!)
+                                                }
+
+                                                // files
+                                                files.forEach { p ->
+                                                    append(
+                                                        p.key,
+                                                        p.fileBody!!,
+                                                        Headers.build {
+                                                            append(
+                                                                HttpHeaders.ContentType,
+                                                                p.fileContentType()
+                                                            )
+                                                            append(
+                                                                HttpHeaders.ContentDisposition,
+                                                                "filename=${p.fileName}"
+                                                            )
+                                                        })
+                                                }
                                             }
-                                        }
+                                        )
                                     )
-                                )
+                                } else {
+                                    // Content-Type: application/x-www-form-urlencoded
+                                    contentType(ContentType.Application.FormUrlEncoded)
+                                    setBody(
+                                        FormDataContent(
+                                            Parameters.build {
+                                                params.forEach { p ->
+                                                    append(p.key, p.value!!)
+                                                }
+                                            }
+                                            // don't support files
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
