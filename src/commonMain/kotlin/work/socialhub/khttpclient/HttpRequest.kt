@@ -22,7 +22,8 @@ class HttpRequest {
     val params = mutableListOf<HttpParameter>()
     val header = mutableMapOf<String, String>()
 
-    var forceMultipart: Boolean = false
+    var forceMultipartFormData: Boolean = false
+    var forceApplicationFormUrlEncoded: Boolean = false
     var followRedirect: Boolean = true
 
     // Basic
@@ -38,7 +39,12 @@ class HttpRequest {
     fun header(key: String, value: String) = also { it.header[key] = value }
 
     // Options
-    fun forceMultipart(forceMultipart: Boolean) = also { it.forceMultipart = forceMultipart }
+    fun forceMultipartFormData(forceMultipartFormData: Boolean) =
+        also { it.forceMultipartFormData = forceMultipartFormData }
+
+    fun forceApplicationFormUrlEncoded(forceApplicationFormUrlEncoded: Boolean) =
+        also { it.forceApplicationFormUrlEncoded = forceApplicationFormUrlEncoded }
+
     fun followRedirect(followRedirect: Boolean) = also { it.followRedirect = followRedirect }
 
     // Parameters
@@ -108,7 +114,8 @@ class HttpRequest {
                     }
                 }
 
-                if (!forceMultipart &&
+                if (!forceMultipartFormData &&
+                    !forceApplicationFormUrlEncoded &&
                     (req.params.size == 1) &&
                     (canSendOnly(req.params.first()))
                 ) {
@@ -130,8 +137,11 @@ class HttpRequest {
                                         url.parameters.append(p.key, p.value!!)
                                     }
 
-                                    // TODO: error
-                                    else -> {}
+                                    else -> {
+                                        throw IllegalStateException(
+                                            "Request Body is not supported in the GET method."
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -149,35 +159,59 @@ class HttpRequest {
                             }
 
                             if (params.isNotEmpty() || files.isNotEmpty()) {
-                                contentType(ContentType.MultiPart.FormData)
-                                setBody(
-                                    MultiPartFormDataContent(
-                                        formData {
 
-                                            // params
-                                            params.forEach { p ->
-                                                append(p.key, p.value!!)
-                                            }
+                                if (forceApplicationFormUrlEncoded) {
+                                    if (files.isNotEmpty()) {
+                                        throw IllegalStateException(
+                                            "ApplicationFormUrlEncoded cannot send files."
+                                        )
+                                    }
 
-                                            // files
-                                            files.forEach { p ->
-                                                append(
-                                                    p.key,
-                                                    p.fileBody!!,
-                                                    Headers.build {
-                                                        append(
-                                                            HttpHeaders.ContentType,
-                                                            p.fileContentType()
-                                                        )
-                                                        append(
-                                                            HttpHeaders.ContentDisposition,
-                                                            "filename=${p.fileName}"
-                                                        )
-                                                    })
+                                    // Content-Type: application/x-www-form-urlencoded
+                                    contentType(ContentType.Application.FormUrlEncoded)
+                                    setBody(
+                                        FormDataContent(
+                                            Parameters.build {
+                                                params.forEach { p ->
+                                                    append(p.key, p.value!!)
+                                                }
                                             }
-                                        }
+                                        )
                                     )
-                                )
+
+                                } else {
+
+                                    // Content-Type: multipart/form-data
+                                    contentType(ContentType.MultiPart.FormData)
+                                    setBody(
+                                        MultiPartFormDataContent(
+                                            formData {
+
+                                                // params
+                                                params.forEach { p ->
+                                                    append(p.key, p.value!!)
+                                                }
+
+                                                // files
+                                                files.forEach { p ->
+                                                    append(
+                                                        p.key,
+                                                        p.fileBody!!,
+                                                        Headers.build {
+                                                            append(
+                                                                HttpHeaders.ContentType,
+                                                                p.fileContentType()
+                                                            )
+                                                            append(
+                                                                HttpHeaders.ContentDisposition,
+                                                                "filename=${p.fileName}"
+                                                            )
+                                                        })
+                                                }
+                                            }
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
@@ -201,5 +235,13 @@ class HttpRequest {
 
             else -> false
         }
+    }
+
+    @Deprecated(
+        "migrate to forceMultipartFormData()",
+        ReplaceWith("forceMultipartFormData(value)")
+    )
+    fun forceMultipart(forceMultipart: Boolean) = also {
+        it.forceMultipartFormData = forceMultipart
     }
 }
