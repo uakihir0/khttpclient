@@ -1,11 +1,31 @@
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     kotlin("multiplatform") version "2.0.20"
     kotlin("plugin.serialization") version "2.0.20"
+
     id("maven-publish")
+    id("signing")
+
+    id("org.jetbrains.dokka") version "1.9.20"
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("com.vanniktech.maven.publish") version "0.29.0"
+    id("me.qoomon.git-versioning") version "6.4.4"
 }
 
 group = "work.socialhub"
 version = "0.0.1-SNAPSHOT"
+
+gitVersioning.apply {
+    refs {
+        considerTagsOnBranches = true
+        tag("v(?<version>.*)") {
+            version = "\${ref.version}"
+        }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -60,7 +80,7 @@ kotlin {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.5"
+    gradleVersion = "8.10.2"
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -78,4 +98,65 @@ publishing {
             }
         }
     }
+
+    // Configure all publications
+    publications.withType<MavenPublication> {
+
+        // Provide artifacts information required by Maven Central
+        pom {
+            name.set("khttpclient")
+            description.set("Kotlin multiplatform simple http request library.")
+            url.set("https://github.com/uakihir0/khttpclient")
+
+            licenses {
+                license {
+                    name.set("MIT License")
+                    url.set("https://opensource.org/licenses/MIT")
+                }
+            }
+
+            developers {
+                developer {
+                    id.set("uakihir0")
+                    name.set("URUSHIHARA Akihiro")
+                    email.set("a.urusihara@gmail.com")
+                }
+            }
+
+            scm {
+                url.set("https://github.com/uakihir0/khttpclient")
+            }
+        }
+    }
 }
+
+nexusPublishing {
+    repositories {
+        sonatype {
+            // only for users registered in Sonatype after 24 Feb 2021
+            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
+        }
+    }
+}
+
+mavenPublishing {
+    configure(
+        KotlinMultiplatform(
+            javadocJar = JavadocJar.Dokka("dokkaHtml")
+        )
+    )
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    if (project.hasProperty("mavenCentralUsername") ||
+        System.getenv("ORG_GRADLE_PROJECT_mavenCentralUsername") != null) {
+        signAllPublications()
+    }
+}
+
+signing {
+    if (project.hasProperty("mavenCentralUsername") ||
+        System.getenv("ORG_GRADLE_PROJECT_mavenCentralUsername") != null) {
+        useGpgCmd()
+    }
+}
+
