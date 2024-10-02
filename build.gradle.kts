@@ -105,8 +105,8 @@ publishing {
         // Provide artifacts information required by Maven Central
         pom {
             name.set("khttpclient")
-            description.set("Kotlin multiplatform Bluesky/ATProtocol core library.")
-            url.set("https://github.com/uakihir0/kbsky")
+            description.set("Kotlin multiplatform simple http request library.")
+            url.set("https://github.com/uakihir0/khttpclient")
 
             licenses {
                 license {
@@ -124,7 +124,7 @@ publishing {
             }
 
             scm {
-                url.set("https://github.com/uakihir0/kbsky")
+                url.set("https://github.com/uakihir0/khttpclient")
             }
         }
     }
