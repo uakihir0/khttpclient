@@ -28,7 +28,7 @@ jobs:
     - name: Publish to Repsy
       uses: gradle/gradle-build-action@v2.6.0
       with:
-        arguments: publish
+        arguments: publishAllPublicationsToMavenRepository
       env:
         USERNAME: ${{ secrets.REPSY_USERNAME }}
         PASSWORD: ${{ secrets.REPSY_PASSWORD }}
