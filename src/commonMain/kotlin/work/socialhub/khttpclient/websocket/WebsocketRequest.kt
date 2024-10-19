@@ -1,12 +1,27 @@
 package work.socialhub.khttpclient.websocket
 
-import io.ktor.client.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.websocket.*
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.pingInterval
+import io.ktor.client.plugins.websocket.webSocket
+import io.ktor.client.request.headers
+import io.ktor.client.request.url
+import io.ktor.http.HttpMethod
+import io.ktor.http.URLBuilder
+import io.ktor.http.takeFrom
+import io.ktor.websocket.Frame
+import io.ktor.websocket.readBytes
+import io.ktor.websocket.readText
+import io.ktor.websocket.send
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.forEach
+import kotlin.collections.mutableMapOf
+import kotlin.collections.set
+import kotlin.time.Duration.Companion.milliseconds
 
 class WebsocketRequest {
 
@@ -46,7 +61,7 @@ class WebsocketRequest {
 
     private val client = HttpClient {
         install(WebSockets) {
-            pingInterval = 20_000
+            pingInterval = 20_000.milliseconds
         }
     }
 

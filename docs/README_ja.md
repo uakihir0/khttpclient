@@ -22,6 +22,20 @@ Ktor Client では、各プラットフォーム向けに幾つかの HttpClient
 
 ## 使い方
 
+### 安定版
+
+```kotlin:build.gradle.kts
+repositories {
+    mavenCentral()
+}
+
+dependencies {
++   implementation("work.socialhub:khttpclient:0.0.2")
+}
+```
+
+### 開発版
+
 ```kotlin:build.gradle.kts
 repositories {
     mavenCentral()
@@ -29,7 +43,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.1-SNAPSHOT")
++   implementation("work.socialhub:khttpclient:0.0.3-SNAPSHOT")
 }
 ```
 

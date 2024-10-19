@@ -25,6 +25,20 @@ However, the behavior in that case cannot be guaranteed.
 
 ## Usage
 
+### Stable
+
+```kotlin:build.gradle.kts
+repositories {
+    mavenCentral()
+}
+
+dependencies {
++   implementation("work.socialhub:khttpclient:0.0.2")
+}
+```
+
+### Snapshot
+
 ```kotlin:build.gradle.kts
 repositories {
     mavenCentral()
@@ -32,7 +46,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.1-SNAPSHOT")
++   implementation("work.socialhub:khttpclient:0.0.3-SNAPSHOT")
 }
 ```
 
