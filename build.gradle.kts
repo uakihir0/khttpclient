@@ -3,8 +3,8 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    kotlin("multiplatform") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("multiplatform") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
 
     id("maven-publish")
     id("signing")
@@ -46,7 +46,7 @@ kotlin {
     macosArm64()
 
     sourceSets {
-        val ktorVersion = "3.0.0"
+        val ktorVersion = "3.0.1"
         val kotestVersion = "5.9.1"
 
         commonMain.dependencies {
