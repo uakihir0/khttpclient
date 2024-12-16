@@ -3,13 +3,13 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    kotlin("multiplatform") version "2.0.21"
-    kotlin("plugin.serialization") version "2.0.21"
+    kotlin("multiplatform") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
 
     id("maven-publish")
     id("signing")
 
-    id("org.jetbrains.dokka") version "1.9.20"
+    id("org.jetbrains.dokka") version "2.0.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.vanniktech.maven.publish") version "0.30.0"
     id("me.qoomon.git-versioning") version "6.4.4"
@@ -46,7 +46,7 @@ kotlin {
     macosArm64()
 
     sourceSets {
-        val ktorVersion = "3.0.0"
+        val ktorVersion = "3.0.2"
         val kotestVersion = "5.9.1"
 
         commonMain.dependencies {
