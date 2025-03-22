@@ -1,6 +1,7 @@
 package work.socialhub.khttpclient
 
 import io.ktor.client.*
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.http.*
@@ -26,6 +27,27 @@ class HttpRequest {
     var forceApplicationFormUrlEncoded: Boolean = false
     var followRedirect: Boolean = true
 
+    /**
+     * Specifies a request timeout in milliseconds.
+     *
+     * https://ktor.io/docs/client-timeout.html
+     */
+    var requestTimeoutMillis: Long? = null
+
+    /**
+     * Specifies a connection timeout in milliseconds.
+     *
+     * https://ktor.io/docs/client-timeout.html
+     */
+    var connectTimeoutMillis: Long? = null
+
+    /**
+     * Specifies a socket timeout (read and write) in milliseconds.
+     *
+     * https://ktor.io/docs/client-timeout.html
+     */
+    var socketTimeoutMillis: Long? = null
+
     // Basic
     fun schema(schema: String) = also { it.schema = schema }
     fun host(host: String) = also { it.host = host }
@@ -46,6 +68,14 @@ class HttpRequest {
         also { it.forceApplicationFormUrlEncoded = forceApplicationFormUrlEncoded }
 
     fun followRedirect(followRedirect: Boolean) = also { it.followRedirect = followRedirect }
+
+    fun requestTimeoutMillis(requestTimeoutMillis: Long) =
+        also { it.requestTimeoutMillis = requestTimeoutMillis }
+
+    fun connectTimeoutMillis(connectTimeoutMillis: Long) =
+        also { it.connectTimeoutMillis = connectTimeoutMillis }
+
+    fun socketTimeoutMillis(socketTimeoutMillis: Long) = also { it.socketTimeoutMillis = socketTimeoutMillis }
 
     // Parameters
     fun query(key: String, value: Any) = also {
@@ -112,6 +142,12 @@ class HttpRequest {
                     req.header.forEach { (k, v) ->
                         append(k, v)
                     }
+                }
+
+                this.timeout {
+                    this.requestTimeoutMillis = req.requestTimeoutMillis
+                    this.connectTimeoutMillis = req.connectTimeoutMillis
+                    this.socketTimeoutMillis = req.socketTimeoutMillis
                 }
 
                 if (!forceMultipartFormData &&
