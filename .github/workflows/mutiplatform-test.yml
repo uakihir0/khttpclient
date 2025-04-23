@@ -2,7 +2,7 @@ name: Kotlin Multiplatform Tests
 on: [push]
 
 jobs:
-  build-and-test:
+  test:
     strategy:
       matrix:
         os:
@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload get test results
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: get-test-results-${{ matrix.os }}
           path: build/reports/tests/
