@@ -50,7 +50,6 @@ kotlin {
 
     sourceSets {
         val ktorVersion = "3.1.1"
-        val kotestVersion = "5.9.1"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -83,11 +82,10 @@ kotlin {
             implementation("io.ktor:ktor-client-winhttp:${ktorVersion}")
         }
 
-        // for test (kotlin/jvm)
-        jvmTest.dependencies {
+        // for test
+        commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
-            implementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
         }
     }
 }

@@ -1,14 +1,20 @@
 package work.socialhub.khttpclient
 
-import kotlinx.coroutines.runBlocking
+import io.ktor.utils.io.core.toByteArray
+import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import work.socialhub.khttpclient.httpbin.PostResponse
+import work.socialhub.khttpclient.resource.GetImageString
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
+import kotlin.test.assertTrue
 
+@OptIn(ExperimentalEncodingApi::class)
 class PostTest {
 
     @Test
-    fun testSimplePost() = runBlocking {
+    fun testSimplePost() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
             .post()
@@ -17,7 +23,7 @@ class PostTest {
     }
 
     @Test
-    fun testPostWithQuery() = runBlocking {
+    fun testPostWithQuery() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
             .query("key1", "value1")
@@ -27,12 +33,12 @@ class PostTest {
         println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
-        assert(bin.args["key1"] == "value1")
-        assert(bin.args["key2"] == "value2")
+        assertTrue(bin.args["key1"] == "value1")
+        assertTrue(bin.args["key2"] == "value2")
     }
 
     @Test
-    fun testPostWithHeader() = runBlocking {
+    fun testPostWithHeader() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
             .header("Header1", "value1")
@@ -42,12 +48,12 @@ class PostTest {
         println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
-        assert(bin.headers["Header1"] == "value1")
-        assert(bin.headers["Header2"] == "value2")
+        assertTrue(bin.headers["Header1"] == "value1")
+        assertTrue(bin.headers["Header2"] == "value2")
     }
 
     @Test
-    fun testPostWithParams() = runBlocking {
+    fun testPostWithParams() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
             .param("key1", "value1")
@@ -57,12 +63,12 @@ class PostTest {
         println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
-        assert(bin.form["key1"] == "value1")
-        assert(bin.form["key2"] == "value2")
+        assertTrue(bin.form["key1"] == "value1")
+        assertTrue(bin.form["key2"] == "value2")
     }
 
     @Test
-    fun testPostWithJson() = runBlocking {
+    fun testPostWithJson() = runTest {
         val json = mapOf(
             "key1" to "value1",
             "key2" to "value2"
@@ -76,12 +82,12 @@ class PostTest {
         println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
-        assert(bin.json?.get("key1") == "value1")
-        assert(bin.json?.get("key2") == "value2")
+        assertTrue(bin.json?.get("key1") == "value1")
+        assertTrue(bin.json?.get("key2") == "value2")
     }
 
     @Test
-    fun testPostWithFile() = runBlocking {
+    fun testPostWithFile() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
             .file("file", "test.txt", "content".toByteArray())
@@ -90,23 +96,22 @@ class PostTest {
         println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
-        assert(bin.files["file"] == "content")
+        assertTrue(bin.files["file"] == "content")
     }
 
     @Test
-    fun testPostWithImage() = runBlocking {
-        val stream = javaClass.getResourceAsStream("/image/icon.png")
-
+    fun testPostWithImage() = runTest {
+        val bytes = Base64.decode(GetImageString())
         val response = HttpRequest()
             .url("https://httpbin.org/post")
-            .file("file", "icon.png", stream.readBytes())
+            .file("file", "icon.png", bytes)
             .post()
 
         println(response.stringBody)
     }
 
     @Test
-    fun testPostWithFileAndParams() = runBlocking {
+    fun testPostWithFileAndParams() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/post")
             .param("key", "value")
@@ -116,7 +121,7 @@ class PostTest {
         println(response.stringBody)
 
         val bin = response.typedBody<PostResponse>()
-        assert(bin.form["key"] == "value")
-        assert(bin.files["file"] == "content")
+        assertTrue(bin.form["key"] == "value")
+        assertTrue(bin.files["file"] == "content")
     }
 }

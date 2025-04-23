@@ -2,37 +2,46 @@ package work.socialhub.khttpclient.websocket
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 
 class WebsocketTest {
 
     @Test
-    fun testSimpleWebsocket() {
+    fun testSimpleWebsocket() = runTest {
+        var ended = false
 
         val request = WebsocketRequest()
             .url("wss://echo.websocket.org")
-            .textListener { println(">>> text: [$it]") }
             .onCloseListener { println(">>> close") }
             .onOpenListener { req ->
                 println(">>> open")
-                Thread {
+                launch {
                     repeat(10) {
-                        runBlocking {
-                            req.sendText(">>> send: $it")
-                            Thread.sleep(100)
-                        }
+                        req.sendText(">>> send: $it")
+                        delay(1000) // no mean
                     }
-                }.start()
+                }
+            }
+            .textListener {
+                println(">>> text: [$it]")
+                println(it)
+                if (it == ">>> send: 9") {
+                    println("??")
+                    ended = true
+                }
             }
 
-        Thread { runBlocking { request.open() } }.start()
-        Thread.sleep(10000)
+        launch { request.open() }
+        // default timeout is 60s.
+        while (!ended) {
+            delay(1000) // no mean
+        }
         request.close()
     }
 
     @Test
-    fun testBlueskyWebsocket() = runBlocking {
+    fun testBlueskyWebsocket() = runTest {
 
         val request = WebsocketRequest()
             .url("wss://bsky.network/xrpc/com.atproto.sync.subscribeRepos")

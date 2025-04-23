@@ -1,7 +1,7 @@
 package work.socialhub.khttpclient
 
-import io.ktor.http.*
-import io.ktor.utils.io.core.*
+import io.ktor.http.ContentType
+import io.ktor.utils.io.core.toByteArray
 
 class HttpParameter(
     val type: Type,
