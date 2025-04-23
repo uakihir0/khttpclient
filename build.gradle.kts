@@ -74,7 +74,7 @@ kotlin {
 
         // for Linux
         linuxMain.dependencies {
-            implementation("io.ktor:ktor-client-cio:${ktorVersion}")
+            implementation("io.ktor:ktor-client-curl:${ktorVersion}")
         }
 
         // for Windows
