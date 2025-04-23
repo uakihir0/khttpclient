@@ -24,6 +24,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
 
       - name: Run get request tests
+        shell: bash
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
             ./gradlew linuxX64Test --tests "GetTest.testSimpleGetSimple"
