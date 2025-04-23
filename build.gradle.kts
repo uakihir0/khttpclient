@@ -45,6 +45,9 @@ kotlin {
     macosX64()
     macosArm64()
 
+    linuxX64()
+    mingwX64()
+
     sourceSets {
         val ktorVersion = "3.1.1"
         val kotestVersion = "5.9.1"
@@ -68,6 +71,16 @@ kotlin {
         // for JS
         jsMain.dependencies {
             implementation("io.ktor:ktor-client-js:$ktorVersion")
+        }
+
+        // for Linux
+        linuxMain.dependencies {
+            implementation("io.ktor:ktor-client-cio:${ktorVersion}")
+        }
+
+        // for Windows
+        mingwMain.dependencies {
+            implementation("io.ktor:ktor-client-winhttp:${ktorVersion}")
         }
 
         // for test (kotlin/jvm)
