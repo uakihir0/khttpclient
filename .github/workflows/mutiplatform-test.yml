@@ -27,11 +27,11 @@ jobs:
         shell: bash
         run: |
           if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            ./gradlew linuxX64Test --tests "GetTest.testSimpleGetSimple"
+            ./gradlew linuxX64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
           elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            ./gradlew mingwX64Test --tests "GetTest.testSimpleGetSimple"
+            ./gradlew mingwX64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
           elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            ./gradlew macosArm64Test --tests "GetTest.testSimpleGetSimple"
+            ./gradlew macosArm64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
           fi
 
       - name: Upload get test results
