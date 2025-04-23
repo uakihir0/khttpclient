@@ -1,10 +1,9 @@
 package work.socialhub.khttpclient
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.junit.jupiter.api.Test
 import work.socialhub.khttpclient.httpbin.PostResponse
+import kotlin.test.Test
 
 class PostTest {
 

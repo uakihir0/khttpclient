@@ -1,8 +1,8 @@
 package work.socialhub.khttpclient
 
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
 import work.socialhub.khttpclient.httpbin.GetResponse
+import kotlin.test.Test
 
 class GetTest {
 
