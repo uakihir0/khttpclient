@@ -13,7 +13,7 @@ jobs:
           - os: macos-latest
             target: macosArm64Test
           - os: ubuntu-latest
-            target: jsTest
+            target: jsBrowserTest
     runs-on: ${{ matrix.os }}
 
     steps:
