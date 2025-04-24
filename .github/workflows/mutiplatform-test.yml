@@ -5,10 +5,15 @@ jobs:
   test:
     strategy:
       matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macos-latest
+        include:
+          - os: ubuntu-latest
+            target: linuxX64
+          - os: windows-latest
+            target: mingwX64
+          - os: macos-latest
+            target: macosArm64
+          - os: ubuntu-latest
+            target: jsTest
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -23,20 +28,20 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
+      - name: Setup Node.js
+        if: matrix.target == 'jsTest'
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
       - name: Run get request tests
         shell: bash
         run: |
-          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
-            ./gradlew linuxX64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
-          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
-            ./gradlew mingwX64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
-          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
-            ./gradlew macosArm64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
-          fi
+          ./gradlew ${{ matrix.target }} --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
 
       - name: Upload get test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: get-test-results-${{ matrix.os }}
+          name: get-test-results-${{ matrix.target }}
           path: build/reports/tests/
