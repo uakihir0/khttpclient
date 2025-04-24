@@ -28,12 +28,6 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Setup Node.js
-        if: matrix.target == 'jsTest'
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-
       - name: Run get request tests
         shell: bash
         run: |
