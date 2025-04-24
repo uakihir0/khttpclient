@@ -14,13 +14,9 @@ import io.ktor.websocket.Frame
 import io.ktor.websocket.readBytes
 import io.ktor.websocket.readText
 import io.ktor.websocket.send
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.forEach
-import kotlin.collections.mutableMapOf
-import kotlin.collections.set
 import kotlin.time.Duration.Companion.milliseconds
 
 class WebsocketRequest {
@@ -121,6 +117,7 @@ class WebsocketRequest {
 
     fun close() {
         onCloseListener(this)
+        client.coroutineContext.cancel()
         client.close()
         session = null
     }

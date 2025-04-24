@@ -6,6 +6,8 @@
 ![badge][badge-jvm]
 ![badge][badge-ios]
 ![badge][badge-mac]
+![badge][badge-windows]
+![badge][badge-linux]
 
 **このライブラリは [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) でシンプルに Http リクエストを行うためのライブラリです。**
 Ktor Client を依存関係に持っており、それをラップする形で実装されています。そのため、本ライブラリは、
@@ -17,8 +19,14 @@ Ktor Client では、各プラットフォーム向けに幾つかの HttpClient
 本ライブラリでは各プラットフォーム向けに以下のエンジンを選択しています。エンジンを切り替えたい場合は、
 依存関係から削除した上で、別のものを追加してください。ただし、その場合の動作については保証できません。
 
-* Apple: Darwin
-* JVM: OkHttp
+- Apple: Darwin
+- JVM: OkHttp
+- Windows: WinHttp
+- Linux: Curl
+
+Linux 環境下では Engine の仕様上 Websocket を使用することができません。Websocket を使用したい場合は、
+依存関係を変更して、 curl を消して cio を加えてください。その場合一部 TLS に対応しておらず、アクセスできないサーバーが存在する可能性があります。
+詳しいエンジンの詳細については、[Ktor 公式ページ](https://ktor.io/docs/client-engines.html)を参照してください。
 
 ## 使い方
 
@@ -30,7 +38,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.3")
++   implementation("work.socialhub:khttpclient:0.0.4")
 }
 ```
 
@@ -43,7 +51,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.4-SNAPSHOT")
++   implementation("work.socialhub:khttpclient:0.0.5-SNAPSHOT")
 }
 ```
 

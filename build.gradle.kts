@@ -1,6 +1,7 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
 import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
     kotlin("multiplatform") version "2.1.10"
@@ -39,15 +40,19 @@ kotlin {
         browser()
     }
 
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    macosX64()
-    macosArm64()
+    if (HostManager.hostIsMac) {
+        iosX64()
+        iosArm64()
+        iosSimulatorArm64()
+        macosX64()
+        macosArm64()
+    }
+
+    linuxX64()
+    mingwX64()
 
     sourceSets {
         val ktorVersion = "3.1.1"
-        val kotestVersion = "5.9.1"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -70,11 +75,20 @@ kotlin {
             implementation("io.ktor:ktor-client-js:$ktorVersion")
         }
 
-        // for test (kotlin/jvm)
-        jvmTest.dependencies {
+        // for Linux
+        linuxMain.dependencies {
+            implementation("io.ktor:ktor-client-curl:${ktorVersion}")
+        }
+
+        // for Windows
+        mingwMain.dependencies {
+            implementation("io.ktor:ktor-client-winhttp:${ktorVersion}")
+        }
+
+        // for test
+        commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation("io.kotest:kotest-runner-junit5-jvm:$kotestVersion")
-            implementation("io.kotest:kotest-assertions-core-jvm:$kotestVersion")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
         }
     }
 }

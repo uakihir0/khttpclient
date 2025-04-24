@@ -1,7 +1,7 @@
 package work.socialhub.khttpclient
 
-import io.ktor.client.call.*
-import io.ktor.util.*
+import io.ktor.client.call.body
+import io.ktor.util.toMap
 import kotlinx.serialization.json.Json
 import io.ktor.client.statement.HttpResponse as KtorHttpResponse
 

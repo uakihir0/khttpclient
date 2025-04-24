@@ -1,0 +1,42 @@
+name: Kotlin Multiplatform Tests
+on: [push]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Run get request tests
+        shell: bash
+        run: |
+          if [ "${{ matrix.os }}" == "ubuntu-latest" ]; then
+            ./gradlew linuxX64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
+          elif [ "${{ matrix.os }}" == "windows-latest" ]; then
+            ./gradlew mingwX64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
+          elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+            ./gradlew macosArm64Test --tests "work.socialhub.khttpclient.GetTest.testSimpleGetSimple"
+          fi
+
+      - name: Upload get test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: get-test-results-${{ matrix.os }}
+          path: build/reports/tests/

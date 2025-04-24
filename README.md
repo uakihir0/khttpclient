@@ -8,20 +8,29 @@
 ![badge][badge-jvm]
 ![badge][badge-ios]
 ![badge][badge-mac]
+![badge][badge-windows]
+![badge][badge-linux]
 
 **This library is designed for making simple Http requests in [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html).**
-It relies on Ktor Client and is implemented as a wrapper for it. Therefore, 
+It relies on Ktor Client and is implemented as a wrapper for it. Therefore,
 this library is available for use in Kotlin Multiplatform as long as the platform is supported by Ktor Client.
 
 ## Engine Selection
 
-Ktor Client provides several implementations of HttpClient engines for each platform. 
-In this library, the following engines are selected for each platform. 
-If you want to switch the engine, remove it from the dependencies and add another one. 
+Ktor Client provides several implementations of HttpClient engines for each platform.
+In this library, the following engines are selected for each platform.
+If you want to switch the engine, remove it from the dependencies and add another one.
 However, the behavior in that case cannot be guaranteed.
 
-* Apple: Darwin
-* JVM: OkHttp
+- Apple: Darwin
+- JVM: OkHttp
+- Windows: WinHttp
+- Linux: Curl
+
+In a Linux environment, WebSocket cannot be used due to the specifications of the Engine. 
+If you want to use WebSocket, please change the dependencies by removing `curl` and adding `cio`. 
+Note that in this case, some servers may be inaccessible due to partial lack of TLS support.  
+For more details about the engine, please refer to the [official Ktor documentation](https://ktor.io/docs/client-engines.html).
 
 ## Usage
 
