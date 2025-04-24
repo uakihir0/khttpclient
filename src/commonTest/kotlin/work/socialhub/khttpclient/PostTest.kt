@@ -20,6 +20,9 @@ class PostTest {
             .post()
 
         println(response.stringBody)
+
+        val bin = response.typedBody<PostResponse>()
+        assertTrue(bin.url == "https://httpbin.org/post")
     }
 
     @Test

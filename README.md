@@ -25,12 +25,12 @@ However, the behavior in that case cannot be guaranteed.
 - Apple: Darwin
 - JVM: OkHttp
 - Windows: WinHttp
-- Linux: CIO
+- Linux: Curl
 
-Due to the specifications of the Engine, HTTP/2 cannot be used in a Linux environment. 
-If you want to use HTTP/2, please change the dependencies by removing `cio` and adding `curl`.
-Note that in this case, WebSocket will not be available. For more details about the engine, 
-please refer to the [official Ktor documentation](https://ktor.io/docs/client-engines.html).
+In a Linux environment, WebSocket cannot be used due to the specifications of the Engine. 
+If you want to use WebSocket, please change the dependencies by removing `curl` and adding `cio`. 
+Note that in this case, some servers may be inaccessible due to partial lack of TLS support.  
+For more details about the engine, please refer to the [official Ktor documentation](https://ktor.io/docs/client-engines.html).
 
 ## Usage
 

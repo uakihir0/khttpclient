@@ -22,10 +22,10 @@ Ktor Client では、各プラットフォーム向けに幾つかの HttpClient
 - Apple: Darwin
 - JVM: OkHttp
 - Windows: WinHttp
-- Linux: CIO
+- Linux: Curl
 
-Linux 環境下では Engine の仕様上 HTTP/2 を使用することができません。HTTP/2 を使用したい場合は、
-依存関係を変更して、 cio を消して curl を加えてください。その場合 WebSocket は利用できません。
+Linux 環境下では Engine の仕様上 Websocket を使用することができません。Websocket を使用したい場合は、
+依存関係を変更して、 curl を消して cio を加えてください。その場合一部 TLS に対応しておらず、アクセスできないサーバーが存在する可能性があります。
 詳しいエンジンの詳細については、[Ktor 公式ページ](https://ktor.io/docs/client-engines.html)を参照してください。
 
 ## 使い方

@@ -8,22 +8,28 @@ import kotlin.test.assertTrue
 class GetTest {
 
     @Test
-    fun testSimpleGetSimple() = runTest {
-        val response = HttpRequest()
-            .host("httpbin.org")
-            .path("get")
-            .get()
-
-        println(response.stringBody)
-    }
-
-    @Test
     fun testSimpleGet() = runTest {
         val response = HttpRequest()
             .url("https://httpbin.org/get")
             .get()
 
         println(response.stringBody)
+
+        val bin = response.typedBody<GetResponse>()
+        assertTrue(bin.url == "https://httpbin.org/get")
+    }
+
+    @Test
+    fun testSimpleGetWithHostAndPath() = runTest {
+        val response = HttpRequest()
+            .host("httpbin.org")
+            .path("get")
+            .get()
+
+        println(response.stringBody)
+
+        val bin = response.typedBody<GetResponse>()
+        assertTrue(bin.url == "https://httpbin.org/get")
     }
 
     @Test

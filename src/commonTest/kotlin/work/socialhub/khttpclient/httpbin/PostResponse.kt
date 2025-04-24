@@ -1,5 +1,8 @@
 package work.socialhub.khttpclient.httpbin
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PostResponse(
     val args: Map<String, String>,
     val data: String,
