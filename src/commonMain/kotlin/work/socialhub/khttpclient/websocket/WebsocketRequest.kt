@@ -36,6 +36,7 @@ class WebsocketRequest {
 
     var onOpenListener: (WebsocketRequest) -> Unit = {}
     var onCloseListener: (WebsocketRequest) -> Unit = {}
+    var onErrorListener: (Exception) -> Unit = { }
 
     // Basic
     fun schema(schema: String) = also { it.schema = schema }
@@ -49,6 +50,7 @@ class WebsocketRequest {
     fun bytesListener(listener: suspend (ByteArray) -> Unit) = also { it.bytesListener = listener }
     fun onOpenListener(listener: (WebsocketRequest) -> Unit) = also { it.onOpenListener = listener }
     fun onCloseListener(listener: (WebsocketRequest) -> Unit) = also { it.onCloseListener = listener }
+    fun onErrorListener(listener: (Exception) -> Unit) = also { it.onErrorListener = listener }
 
     // Headers
     fun accept(accept: String) = also { it.accept = accept }
@@ -108,6 +110,9 @@ class WebsocketRequest {
                         else -> {}
                     }
                 }
+            } catch (e: Exception) {
+                // call when error caused
+                req.onErrorListener(e)
             } finally {
                 // call when close
                 req.onCloseListener(req)
