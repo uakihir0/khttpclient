@@ -23,6 +23,7 @@ import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import work.socialhub.khttpclient.HttpParameter.Type
+import work.socialhub.khttpclient.internal.applySystemProxy
 
 class HttpRequest {
 
@@ -133,6 +134,7 @@ class HttpRequest {
     private suspend fun proceed(method: HttpMethod): HttpResponse {
         val req = this
         val client = HttpClient {
+            applySystemProxy()
             this.followRedirects = req.followRedirect
         }
 
