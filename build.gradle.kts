@@ -4,15 +4,15 @@ import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
-    kotlin("multiplatform") version "2.1.20"
-    kotlin("plugin.serialization") version "2.1.20"
+    kotlin("multiplatform") version "2.2.21"
+    kotlin("plugin.serialization") version "2.2.21"
 
     id("maven-publish")
     id("signing")
 
-    id("org.jetbrains.dokka") version "2.0.0"
+    id("org.jetbrains.dokka") version "2.1.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
-    id("com.vanniktech.maven.publish") version "0.31.0"
+    id("com.vanniktech.maven.publish") version "0.34.0"
     id("me.qoomon.git-versioning") version "6.4.4"
 }
 
@@ -52,12 +52,12 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "3.1.2"
+        val ktorVersion = "3.3.2"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-client-websockets:$ktorVersion")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
         }
 
         // for Apple platform
