@@ -17,6 +17,7 @@ import io.ktor.websocket.send
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import work.socialhub.khttpclient.internal.applySystemProxy
 import kotlin.time.Duration.Companion.milliseconds
 
 class WebsocketRequest {
@@ -58,6 +59,7 @@ class WebsocketRequest {
     fun header(key: String, value: String) = also { it.header[key] = value }
 
     private val client = HttpClient {
+        applySystemProxy()
         install(WebSockets) {
             pingInterval = 20_000.milliseconds
         }
