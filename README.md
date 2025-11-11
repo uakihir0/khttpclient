@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.5")
++   implementation("work.socialhub:khttpclient:0.0.6")
 }
 ```
 
@@ -55,7 +55,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.6-SNAPSHOT")
++   implementation("work.socialhub:khttpclient:0.0.7-SNAPSHOT")
 }
 ```
 
