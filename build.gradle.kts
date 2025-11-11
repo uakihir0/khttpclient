@@ -160,10 +160,6 @@ mavenPublishing {
         )
     )
 
-    publishToMavenCentral(
-        automaticRelease = true,
-    )
-
     if (project.hasProperty("mavenCentralUsername") ||
         System.getenv("ORG_GRADLE_PROJECT_mavenCentralUsername") != null
     ) signAllPublications()
