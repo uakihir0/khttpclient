@@ -1,6 +1,5 @@
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.KotlinMultiplatform
-import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
@@ -162,7 +161,6 @@ mavenPublishing {
     )
 
     publishToMavenCentral(
-        host = SonatypeHost.CENTRAL_PORTAL,
         automaticRelease = true,
     )
 
