@@ -14,3 +14,5 @@ internal fun HttpClientConfig<*>.applySystemProxy() {
         }
     }
 }
+
+internal expect fun HttpClientConfig<*>.applySkipSSLValidation()

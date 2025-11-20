@@ -23,6 +23,7 @@ import io.ktor.http.content.ByteArrayContent
 import io.ktor.http.contentType
 import io.ktor.http.takeFrom
 import work.socialhub.khttpclient.HttpParameter.Type
+import work.socialhub.khttpclient.internal.applySkipSSLValidation
 import work.socialhub.khttpclient.internal.applySystemProxy
 
 class HttpRequest {
@@ -42,6 +43,7 @@ class HttpRequest {
     var forceMultipartFormData: Boolean = false
     var forceApplicationFormUrlEncoded: Boolean = false
     var followRedirect: Boolean = true
+    var skipSSLValidation: Boolean = false
 
     /**
      * Specifies a request timeout in milliseconds.
@@ -84,6 +86,8 @@ class HttpRequest {
         also { it.forceApplicationFormUrlEncoded = forceApplicationFormUrlEncoded }
 
     fun followRedirect(followRedirect: Boolean) = also { it.followRedirect = followRedirect }
+
+    fun skipSSLValidation(skipSSLValidation: Boolean) = also { it.skipSSLValidation = skipSSLValidation }
 
     fun requestTimeoutMillis(requestTimeoutMillis: Long) =
         also { it.requestTimeoutMillis = requestTimeoutMillis }
@@ -135,6 +139,9 @@ class HttpRequest {
         val req = this
         val client = HttpClient {
             applySystemProxy()
+            if (req.skipSSLValidation) {
+                applySkipSSLValidation()
+            }
             this.followRedirects = req.followRedirect
         }
 
