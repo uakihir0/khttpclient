@@ -39,7 +39,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.7")
++   implementation("work.socialhub:khttpclient:0.0.8")
 }
 ```
 
@@ -52,7 +52,7 @@ repositories {
 }
 
 dependencies {
-+   implementation("work.socialhub:khttpclient:0.0.8-SNAPSHOT")
++   implementation("work.socialhub:khttpclient:0.0.9-SNAPSHOT")
 }
 ```
 
@@ -99,8 +99,8 @@ MIT License
 
 [Akihiro Urushihara](https://github.com/uakihir0)
 
-
 [badge-android]: http://img.shields.io/badge/-android-6EDB8D.svg
+
 [badge-android-native]: http://img.shields.io/badge/support-[AndroidNative]-6EDB8D.svg
 [badge-wearos]: http://img.shields.io/badge/-wearos-8ECDA0.svg
 [badge-jvm]: http://img.shields.io/badge/-jvm-DB413D.svg

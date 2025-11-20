@@ -17,7 +17,7 @@ plugins {
 }
 
 group = "work.socialhub"
-version = "0.0.8-SNAPSHOT"
+version = "0.0.9-SNAPSHOT"
 
 gitVersioning.apply {
     refs {
