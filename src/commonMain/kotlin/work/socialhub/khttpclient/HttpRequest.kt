@@ -25,7 +25,6 @@ import io.ktor.http.takeFrom
 import work.socialhub.khttpclient.HttpParameter.Type
 import work.socialhub.khttpclient.internal.applySkipSSLValidation
 import work.socialhub.khttpclient.internal.applySystemProxy
-import kotlin.io.use
 
 class HttpRequest {
 
