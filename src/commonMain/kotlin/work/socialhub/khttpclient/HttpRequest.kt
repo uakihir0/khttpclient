@@ -25,6 +25,7 @@ import io.ktor.http.takeFrom
 import work.socialhub.khttpclient.HttpParameter.Type
 import work.socialhub.khttpclient.internal.applySkipSSLValidation
 import work.socialhub.khttpclient.internal.applySystemProxy
+import kotlin.io.use
 
 class HttpRequest {
 
@@ -137,147 +138,148 @@ class HttpRequest {
     // Request
     private suspend fun proceed(method: HttpMethod): HttpResponse {
         val req = this
-        val client = HttpClient {
+        return HttpClient {
             applySystemProxy()
             if (req.skipSSLValidation) {
                 applySkipSSLValidation()
             }
             this.followRedirects = req.followRedirect
-        }
+        }.use { client ->
 
-        accept?.let { header["Accept"] = it }
-        userAgent?.let { header["User-Agent"] = it }
+            accept?.let { header["Accept"] = it }
+            userAgent?.let { header["User-Agent"] = it }
 
-        return HttpResponse.from(
-            client.request {
-                this.method = method
-                if (req.url != null) {
-                    val tmp = checkNotNull(req.url)
-                    this.url.takeFrom(URLBuilder(tmp))
-                } else {
-                    this.url(
-                        req.schema,
-                        req.host,
-                        req.port,
-                        req.path,
-                    )
-                }
-                this.headers {
-                    req.header.forEach { (k, v) ->
-                        append(k, v)
-                    }
-                }
-
-                this.timeout {
-                    this.requestTimeoutMillis = req.requestTimeoutMillis
-                    this.connectTimeoutMillis = req.connectTimeoutMillis
-                    this.socketTimeoutMillis = req.socketTimeoutMillis
-                }
-
-                if (!forceMultipartFormData &&
-                    !forceApplicationFormUrlEncoded &&
-                    (req.params.size == 1) &&
-                    (canSendOnly(req.params.first()))
-                ) {
-                    val param = req.params.first()
-                    setBody(
-                        ByteArrayContent(
-                            bytes = param.fileBody!!,
-                            contentType = param.fileContentType()
+            HttpResponse.from(
+                client.request {
+                    this.method = method
+                    if (req.url != null) {
+                        val tmp = checkNotNull(req.url)
+                        this.url.takeFrom(URLBuilder(tmp))
+                    } else {
+                        this.url(
+                            req.schema,
+                            req.host,
+                            req.port,
+                            req.path,
                         )
-                    )
+                    }
+                    this.headers {
+                        req.header.forEach { (k, v) ->
+                            append(k, v)
+                        }
+                    }
 
-                } else {
+                    this.timeout {
+                        this.requestTimeoutMillis = req.requestTimeoutMillis
+                        this.connectTimeoutMillis = req.connectTimeoutMillis
+                        this.socketTimeoutMillis = req.socketTimeoutMillis
+                    }
 
-                    when (method) {
-                        HttpMethod.Get -> {
-                            req.params.forEach { p ->
-                                when (p.type) {
-                                    Type.QUERY -> {
+                    if (!forceMultipartFormData &&
+                        !forceApplicationFormUrlEncoded &&
+                        (req.params.size == 1) &&
+                        (canSendOnly(req.params.first()))
+                    ) {
+                        val param = req.params.first()
+                        setBody(
+                            ByteArrayContent(
+                                bytes = param.fileBody!!,
+                                contentType = param.fileContentType()
+                            )
+                        )
+
+                    } else {
+
+                        when (method) {
+                            HttpMethod.Get -> {
+                                req.params.forEach { p ->
+                                    when (p.type) {
+                                        Type.QUERY -> {
+                                            url.parameters.append(p.key, p.value!!)
+                                        }
+
+                                        else -> {
+                                            throw IllegalStateException(
+                                                "Request Body is not supported in the GET method."
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                val queries = req.params.filter { it.type == Type.QUERY }
+                                val params = req.params.filter { it.type == Type.PARAM }
+                                val files = req.params.filter { it.type == Type.FILE }
+
+                                // queries
+                                if (queries.isNotEmpty()) {
+                                    queries.forEach { p ->
                                         url.parameters.append(p.key, p.value!!)
                                     }
+                                }
 
-                                    else -> {
-                                        throw IllegalStateException(
-                                            "Request Body is not supported in the GET method."
+                                if (params.isNotEmpty() || files.isNotEmpty()) {
+
+                                    if (forceApplicationFormUrlEncoded) {
+                                        if (files.isNotEmpty()) {
+                                            throw IllegalStateException(
+                                                "ApplicationFormUrlEncoded cannot send files."
+                                            )
+                                        }
+
+                                        // Content-Type: application/x-www-form-urlencoded
+                                        contentType(ContentType.Application.FormUrlEncoded)
+                                        setBody(
+                                            FormDataContent(
+                                                Parameters.build {
+                                                    params.forEach { p ->
+                                                        append(p.key, p.value!!)
+                                                    }
+                                                }
+                                            )
+                                        )
+
+                                    } else {
+
+                                        // Content-Type: multipart/form-data
+                                        contentType(ContentType.MultiPart.FormData)
+                                        setBody(
+                                            MultiPartFormDataContent(
+                                                formData {
+
+                                                    // params
+                                                    params.forEach { p ->
+                                                        append(p.key, p.value!!)
+                                                    }
+
+                                                    // files
+                                                    files.forEach { p ->
+                                                        append(
+                                                            p.key,
+                                                            p.fileBody!!,
+                                                            Headers.build {
+                                                                append(
+                                                                    HttpHeaders.ContentType,
+                                                                    p.fileContentType()
+                                                                )
+                                                                append(
+                                                                    HttpHeaders.ContentDisposition,
+                                                                    "filename=${p.fileName}"
+                                                                )
+                                                            })
+                                                    }
+                                                }
+                                            )
                                         )
                                     }
-                                }
-                            }
-                        }
-
-                        else -> {
-                            val queries = req.params.filter { it.type == Type.QUERY }
-                            val params = req.params.filter { it.type == Type.PARAM }
-                            val files = req.params.filter { it.type == Type.FILE }
-
-                            // queries
-                            if (queries.isNotEmpty()) {
-                                queries.forEach { p ->
-                                    url.parameters.append(p.key, p.value!!)
-                                }
-                            }
-
-                            if (params.isNotEmpty() || files.isNotEmpty()) {
-
-                                if (forceApplicationFormUrlEncoded) {
-                                    if (files.isNotEmpty()) {
-                                        throw IllegalStateException(
-                                            "ApplicationFormUrlEncoded cannot send files."
-                                        )
-                                    }
-
-                                    // Content-Type: application/x-www-form-urlencoded
-                                    contentType(ContentType.Application.FormUrlEncoded)
-                                    setBody(
-                                        FormDataContent(
-                                            Parameters.build {
-                                                params.forEach { p ->
-                                                    append(p.key, p.value!!)
-                                                }
-                                            }
-                                        )
-                                    )
-
-                                } else {
-
-                                    // Content-Type: multipart/form-data
-                                    contentType(ContentType.MultiPart.FormData)
-                                    setBody(
-                                        MultiPartFormDataContent(
-                                            formData {
-
-                                                // params
-                                                params.forEach { p ->
-                                                    append(p.key, p.value!!)
-                                                }
-
-                                                // files
-                                                files.forEach { p ->
-                                                    append(
-                                                        p.key,
-                                                        p.fileBody!!,
-                                                        Headers.build {
-                                                            append(
-                                                                HttpHeaders.ContentType,
-                                                                p.fileContentType()
-                                                            )
-                                                            append(
-                                                                HttpHeaders.ContentDisposition,
-                                                                "filename=${p.fileName}"
-                                                            )
-                                                        })
-                                                }
-                                            }
-                                        )
-                                    )
                                 }
                             }
                         }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 
     private fun canSendOnly(param: HttpParameter): Boolean {
