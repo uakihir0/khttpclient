@@ -3,14 +3,14 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
-    kotlin("multiplatform") version "2.3.0"
-    kotlin("plugin.serialization") version "2.3.0"
+    kotlin("multiplatform") version "2.3.21"
+    kotlin("plugin.serialization") version "2.3.21"
 
     id("maven-publish")
     id("signing")
 
-    id("org.jetbrains.dokka") version "2.1.0"
-    id("org.jetbrains.dokka-javadoc") version "2.1.0"
+    id("org.jetbrains.dokka") version "2.2.0"
+    id("org.jetbrains.dokka-javadoc") version "2.2.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.vanniktech.maven.publish") version "0.36.0"
     id("me.qoomon.git-versioning") version "6.4.4"
@@ -53,12 +53,12 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "3.4.0"
+        val ktorVersion = "3.5.0"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-client-websockets:$ktorVersion")
-            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.11.0")
         }
 
         // for Apple platform
@@ -89,7 +89,7 @@ kotlin {
         // for test
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
         }
     }
 }
