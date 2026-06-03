@@ -46,37 +46,50 @@ actual class WebsocketRequest {
     actual fun onCloseListener(listener: (WebsocketRequest) -> Unit) = also { it.onCloseListener = listener }
     actual fun onErrorListener(listener: (Exception) -> Unit) = also { it.onErrorListener = listener }
 
-    // Headers
+    // Headers (browser WebSocket API does not support custom headers)
     actual fun accept(accept: String) = also { it.accept = accept }
     actual fun userAgent(userAgent: String) = also { it.userAgent = userAgent }
     actual fun header(key: String, value: String) = also { it.header[key] = value }
 
     private var ws: WebSocket? = null
     private var closed = CompletableDeferred<Unit>()
+    private var closeCalled = false
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
     actual suspend fun open(): WebsocketRequest = start()
-    actual suspend fun openPost(): WebsocketRequest = start()
+
+    actual suspend fun openPost(): WebsocketRequest {
+        throw UnsupportedOperationException("WebSocket POST handshake is not supported on JS target")
+    }
 
     private suspend fun start(): WebsocketRequest {
         val wsUrl = buildUrl()
         val opened = CompletableDeferred<Unit>()
         closed = CompletableDeferred()
+        closeCalled = false
 
         val socket = WebSocket(wsUrl)
         socket.binaryType = "arraybuffer".unsafeCast<org.w3c.dom.BinaryType>()
         ws = socket
 
         socket.onopen = {
-            onOpenListener(this)
             opened.complete(Unit)
+            try {
+                onOpenListener(this)
+            } catch (e: Throwable) {
+                onErrorListener(RuntimeException("onOpenListener failed", e))
+            }
         }
 
         socket.onclose = {
+            ws = null
             if (!opened.isCompleted) {
                 opened.completeExceptionally(RuntimeException("WebSocket closed before open"))
             }
-            onCloseListener(this)
+            if (!closeCalled) {
+                closeCalled = true
+                onCloseListener(this)
+            }
             closed.complete(Unit)
         }
 
@@ -101,7 +114,6 @@ actual class WebsocketRequest {
             }
         }
 
-        // Cancel WebSocket when parent coroutine is cancelled
         coroutineContext[Job]?.invokeOnCompletion {
             ws?.close()
             scope.cancel()
@@ -123,6 +135,10 @@ actual class WebsocketRequest {
     }
 
     actual fun close() {
+        if (!closeCalled) {
+            closeCalled = true
+            onCloseListener(this)
+        }
         ws?.close()
         ws = null
         closed.complete(Unit)
@@ -130,10 +146,12 @@ actual class WebsocketRequest {
     }
 
     actual suspend fun sendText(text: String) {
-        checkNotNull(ws) { "WebSocket is not connected" }.send(text)
+        val socket = ws ?: throw IllegalStateException("WebSocket is not connected")
+        socket.send(text)
     }
 
     actual suspend fun sendBinary(content: ByteArray) {
-        checkNotNull(ws) { "WebSocket is not connected" }.send(content.unsafeCast<org.khronos.webgl.ArrayBufferView>())
+        val socket = ws ?: throw IllegalStateException("WebSocket is not connected")
+        socket.send(content.unsafeCast<org.khronos.webgl.ArrayBufferView>())
     }
 }
