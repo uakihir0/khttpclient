@@ -1,147 +1,49 @@
 package work.socialhub.khttpclient.websocket
 
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.websocket.DefaultClientWebSocketSession
-import io.ktor.client.plugins.websocket.WebSockets
-import io.ktor.client.plugins.websocket.pingInterval
-import io.ktor.client.plugins.websocket.webSocket
-import io.ktor.client.request.headers
-import io.ktor.client.request.url
-import io.ktor.http.HttpMethod
-import io.ktor.http.URLBuilder
-import io.ktor.http.takeFrom
-import io.ktor.websocket.Frame
-import io.ktor.websocket.readBytes
-import io.ktor.websocket.readText
-import io.ktor.websocket.send
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import work.socialhub.khttpclient.internal.applySystemProxy
-import kotlin.time.Duration.Companion.milliseconds
+expect class WebsocketRequest() {
 
-class WebsocketRequest {
+    var schema: String
+    var host: String?
+    var path: String?
+    var port: Int?
+    var url: String?
 
-    var schema: String = "ws"
-    var host: String? = null
-    var path: String? = null
-    var port: Int? = null
-    var url: String? = null
+    var accept: String?
+    var userAgent: String?
+    val header: MutableMap<String, String>
 
-    var accept: String? = null
-    var userAgent: String? = "kHttpClient/1.0"
-    val header = mutableMapOf<String, String>()
+    var textListener: suspend (String) -> Unit
+    var bytesListener: suspend (ByteArray) -> Unit
 
-    var textListener: suspend (String) -> Unit = {}
-    var bytesListener: suspend (ByteArray) -> Unit = {}
-
-    var onOpenListener: (WebsocketRequest) -> Unit = {}
-    var onCloseListener: (WebsocketRequest) -> Unit = {}
-    var onErrorListener: (Exception) -> Unit = { }
+    var onOpenListener: (WebsocketRequest) -> Unit
+    var onCloseListener: (WebsocketRequest) -> Unit
+    var onErrorListener: (Exception) -> Unit
 
     // Basic
-    fun schema(schema: String) = also { it.schema = schema }
-    fun host(host: String) = also { it.host = host }
-    fun path(path: String) = also { it.path = path }
-    fun port(port: Int?) = also { it.port = port }
-    fun url(url: String?) = also { it.url = url }
+    fun schema(schema: String): WebsocketRequest
+    fun host(host: String): WebsocketRequest
+    fun path(path: String): WebsocketRequest
+    fun port(port: Int?): WebsocketRequest
+    fun url(url: String?): WebsocketRequest
 
     // Listener
-    fun textListener(listener: suspend (String) -> Unit) = also { it.textListener = listener }
-    fun bytesListener(listener: suspend (ByteArray) -> Unit) = also { it.bytesListener = listener }
-    fun onOpenListener(listener: (WebsocketRequest) -> Unit) = also { it.onOpenListener = listener }
-    fun onCloseListener(listener: (WebsocketRequest) -> Unit) = also { it.onCloseListener = listener }
-    fun onErrorListener(listener: (Exception) -> Unit) = also { it.onErrorListener = listener }
+    fun textListener(listener: suspend (String) -> Unit): WebsocketRequest
+    fun bytesListener(listener: suspend (ByteArray) -> Unit): WebsocketRequest
+    fun onOpenListener(listener: (WebsocketRequest) -> Unit): WebsocketRequest
+    fun onCloseListener(listener: (WebsocketRequest) -> Unit): WebsocketRequest
+    fun onErrorListener(listener: (Exception) -> Unit): WebsocketRequest
 
     // Headers
-    fun accept(accept: String) = also { it.accept = accept }
-    fun userAgent(userAgent: String) = also { it.userAgent = userAgent }
-    fun header(key: String, value: String) = also { it.header[key] = value }
-
-    private val client = HttpClient {
-        applySystemProxy()
-        install(WebSockets) {
-            pingInterval = 20_000.milliseconds
-        }
-    }
-
-    private var session: DefaultClientWebSocketSession? = null
+    fun accept(accept: String): WebsocketRequest
+    fun userAgent(userAgent: String): WebsocketRequest
+    fun header(key: String, value: String): WebsocketRequest
 
     // Start
-    suspend fun open() = start(HttpMethod.Get)
-    suspend fun openPost() = start(HttpMethod.Post)
+    suspend fun open(): WebsocketRequest
+    suspend fun openPost(): WebsocketRequest
 
-    suspend fun start(method: HttpMethod) = also {
-        val req = this
-        accept?.let { header["Accept"] = it }
-        userAgent?.let { header["User-Agent"] = it }
+    fun close()
 
-        client.webSocket({
-            this.method = method
-            if (req.url != null) {
-                val tmp = checkNotNull(req.url)
-                this.url.takeFrom(URLBuilder(tmp))
-            } else {
-                this.url(
-                    req.schema,
-                    req.host,
-                    req.port,
-                    req.path,
-                )
-            }
-            this.headers {
-                req.header.forEach { (k, v) ->
-                    append(k, v)
-                }
-            }
-        }) {
-            try {
-                session = this
-                req.onOpenListener(req)
-
-                for (frame in incoming) {
-                    when (frame) {
-                        is Frame.Text -> {
-                            launch { textListener(frame.readText()) }
-                        }
-
-                        is Frame.Binary -> {
-                            launch { bytesListener(frame.readBytes()) }
-                        }
-
-                        else -> {}
-                    }
-                }
-            } catch (e: Exception) {
-                // call when error caused
-                req.onErrorListener(e)
-            } finally {
-                // call when close
-                req.onCloseListener(req)
-            }
-        }
-    }
-
-    fun close() {
-        onCloseListener(this)
-        client.coroutineContext.cancel()
-        client.close()
-        session = null
-    }
-
-    suspend fun sendText(text: String) {
-        checkNotNull(session).let {
-            if (it.isActive) {
-                it.send(text)
-            }
-        }
-    }
-
-    suspend fun sendBinary(content: ByteArray) {
-        checkNotNull(session).let {
-            if (it.isActive) {
-                it.send(content)
-            }
-        }
-    }
+    suspend fun sendText(text: String)
+    suspend fun sendBinary(content: ByteArray)
 }
