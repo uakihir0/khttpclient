@@ -36,7 +36,7 @@ kotlin {
     jvmToolchain(11)
     jvm()
 
-    js(IR) {
+    js {
         binaries.library()
         browser()
     }
@@ -45,7 +45,6 @@ kotlin {
         iosX64()
         iosArm64()
         iosSimulatorArm64()
-        macosX64()
         macosArm64()
     }
 
