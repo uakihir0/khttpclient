@@ -94,10 +94,15 @@ actual class WebsocketRequest {
         }
 
         socket.onerror = { _: Event ->
-            val ex = RuntimeException("WebSocket error")
-            onErrorListener(ex)
-            if (!opened.isCompleted) {
-                opened.completeExceptionally(ex)
+            // Do not surface errors once the caller has closed the socket: a
+            // dying socket can still emit an error event after close(), which
+            // would otherwise re-enter the consumer's onError.
+            if (!closeCalled) {
+                val ex = RuntimeException("WebSocket error")
+                onErrorListener(ex)
+                if (!opened.isCompleted) {
+                    opened.completeExceptionally(ex)
+                }
             }
         }
 
@@ -138,6 +143,15 @@ actual class WebsocketRequest {
         if (!closeCalled) {
             closeCalled = true
             onCloseListener(this)
+        }
+        // Detach handlers before closing so a buffered onmessage / a late
+        // onerror / onclose delivered by the browser after close() cannot
+        // dispatch into the (cancelled) scope or re-enter the consumer.
+        ws?.let {
+            it.onopen = null
+            it.onmessage = null
+            it.onerror = null
+            it.onclose = null
         }
         ws?.close()
         ws = null
