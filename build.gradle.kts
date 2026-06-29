@@ -52,7 +52,7 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "3.5.0"
+        val ktorVersion = "3.5.1"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
