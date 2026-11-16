@@ -3,17 +3,17 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
-    kotlin("multiplatform") version "2.4.10"
-    kotlin("plugin.serialization") version "2.4.10"
+    kotlin("multiplatform") version "2.4.21"
+    kotlin("plugin.serialization") version "2.4.21"
 
     id("maven-publish")
     id("signing")
 
-    id("org.jetbrains.dokka") version "2.2.0"
-    id("org.jetbrains.dokka-javadoc") version "2.2.0"
+    id("org.jetbrains.dokka") version "2.3.0"
+    id("org.jetbrains.dokka-javadoc") version "2.3.0"
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
     id("com.vanniktech.maven.publish") version "0.37.0"
-    id("me.qoomon.git-versioning") version "6.4.4"
+    id("me.qoomon.git-versioning") version "7.0.0"
 }
 
 group = "work.socialhub"
@@ -52,7 +52,7 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "3.5.1"
+        val ktorVersion = "3.6.1"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
@@ -94,7 +94,7 @@ kotlin {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.10.2"
+    gradleVersion = "9.9.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 
