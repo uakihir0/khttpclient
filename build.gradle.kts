@@ -3,8 +3,8 @@ import com.vanniktech.maven.publish.KotlinMultiplatform
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
-    kotlin("multiplatform") version "2.4.0"
-    kotlin("plugin.serialization") version "2.4.0"
+    kotlin("multiplatform") version "2.4.10"
+    kotlin("plugin.serialization") version "2.4.10"
 
     id("maven-publish")
     id("signing")
@@ -52,7 +52,7 @@ kotlin {
     mingwX64()
 
     sourceSets {
-        val ktorVersion = "3.5.0"
+        val ktorVersion = "3.5.1"
 
         commonMain.dependencies {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
